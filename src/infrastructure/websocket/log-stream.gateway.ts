@@ -1,4 +1,4 @@
-import { Server } from "ws";
+import WebSocket, { WebSocketServer } from "ws";
 import { logger } from "../../core/logging/logger.js";
 
 interface ThreatLogMessage {
@@ -10,10 +10,10 @@ interface ThreatLogMessage {
 }
 
 export class LogStreamGateway {
-  private wss: Server;
+  private wss: WebSocketServer;
 
   constructor(port: number) {
-    this.wss = new Server({ port });
+    this.wss = new WebSocketServer({ port });
     this.wss.on("connection", (socket) => {
       socket.on("message", (raw) => {
         logger.debug({ raw: raw.toString() }, "WS control message received");
@@ -24,7 +24,7 @@ export class LogStreamGateway {
   publish(msg: ThreatLogMessage): void {
     const payload = JSON.stringify({ event: "threat.log", data: msg });
     for (const client of this.wss.clients) {
-      if (client.readyState === client.OPEN) {
+      if (client.readyState === WebSocket.OPEN) {
         client.send(payload);
       }
     }
