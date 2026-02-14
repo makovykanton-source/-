@@ -342,3 +342,21 @@ npm ls discord.js
 ```
 
 Убедитесь, что установлена ветка `14.x` (рекомендуется `14.25+`).
+
+
+### Проблема: установился `discord.js@13.x` вместо `14.x`
+
+Это обычно происходит из-за старого lock-файла, кэша или внутреннего registry, который отдает устаревшую версию.
+
+Сделайте так:
+
+```bash
+rm -rf node_modules package-lock.json
+npm cache clean --force
+npm install
+npm ls discord.js
+```
+
+Должно быть: `discord.js@14.25.x` (или выше в ветке 14).
+
+В проекте добавлены `overrides` и проверка `npm run verify:deps`, поэтому postinstall теперь явно валидирует major-версию.
