@@ -1,9 +1,18 @@
+import { config } from "dotenv";
 import { Pool } from "pg";
-import { env } from "../../core/config/env.js";
+
+config();
+
+const databaseUrl = process.env.DATABASE_URL;
+if (!databaseUrl) {
+  throw new Error("DATABASE_URL is required for PostgreSQL connection");
+}
+
+const nodeEnv = process.env.NODE_ENV ?? "development";
 
 export const pgPool = new Pool({
-  connectionString: env.DATABASE_URL,
+  connectionString: databaseUrl,
   max: 30,
   statement_timeout: 8000,
-  ssl: env.NODE_ENV === "production" ? { rejectUnauthorized: true } : false
+  ssl: nodeEnv === "production" ? { rejectUnauthorized: true } : false
 });

@@ -352,6 +352,9 @@ cp .env.example .env
 
 Обязательные поля описаны в `src/core/config/env.ts`.
 
+> Для `npm run migrate` теперь достаточно `DATABASE_URL` (и опционально `NODE_ENV`),
+> потому что мигратор не требует Discord/JWT переменные.
+
 ---
 
 ## 11) Production checklist
