@@ -369,6 +369,26 @@ npm ls discord.js
 - Если сервер имеет прямой доступ в интернет (npm registry, Discord API, OAuth endpoints) — **прокси не нужен**.
 - Если в вашей сети исходящий трафик ограничен — используйте HTTP/HTTPS proxy.
 
+
+### Хочу ставить зависимости через обычный интернет (без прокси)
+
+Если прокси вам **не нужен**, запускайте команды без proxy env:
+
+```bash
+unset HTTP_PROXY HTTPS_PROXY http_proxy https_proxy
+unset npm_config_http_proxy npm_config_https_proxy
+
+# затем обычная установка
+npm install
+```
+
+Или коротко через готовые scripts:
+
+```bash
+npm run install:direct
+npm run check:direct
+```
+
 ### Когда прокси точно нужен
 
 - `npm install` падает из-за сетевых ограничений.
