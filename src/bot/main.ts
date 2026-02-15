@@ -1,33 +1,37 @@
-import * as Discord from "discord.js";
+import {
+  Client,
+  GatewayIntentBits,
+  Partials,
+  ChannelType,
+  type NonThreadGuildBasedChannel
+} from "discord.js";
 import { env } from "../core/config/env.js";
 import { tokens } from "../core/config/tokens.js";
 import { logger } from "../core/logging/logger.js";
 import { handleDestructiveAction } from "../modules/anti-nuke/anti-nuke.handler.js";
 
-const GatewayIntentBits = (Discord as any).GatewayIntentBits ?? (Discord as any).Intents?.FLAGS;
-const Partials = (Discord as any).Partials ?? (Discord as any).Constants?.Partials;
-
-const client = new Discord.Client({
+const client = new Client({
   intents: [
-    GatewayIntentBits?.Guilds,
-    GatewayIntentBits?.GuildMembers,
-    GatewayIntentBits?.GuildMessages,
-    GatewayIntentBits?.MessageContent,
-    GatewayIntentBits?.GuildModeration,
-    GatewayIntentBits?.GUILD_MEMBERS,
-    GatewayIntentBits?.GUILD_MESSAGES
-  ].filter(Boolean),
-  partials: [Partials?.GuildMember, Partials?.Channel].filter(Boolean)
-} as any);
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent,
+    GatewayIntentBits.GuildModeration
+  ],
+  partials: [Partials.GuildMember, Partials.Channel]
+});
+
+function isGuildChannel(channel: NonThreadGuildBasedChannel | any): channel is NonThreadGuildBasedChannel {
+  return channel?.type !== ChannelType.DM && Boolean(channel?.guild);
+}
 
 client.once("ready", () => logger.info({ shard: env.SHARD_ID }, "Discord bot ready"));
 
-client.on("channelDelete", async (channel: any) => {
-  const guild = channel?.guild;
-  if (!guild) return;
+client.on("channelDelete", async (channel) => {
+  if (!isGuildChannel(channel)) return;
 
   await handleDestructiveAction(
-    guild,
+    channel.guild,
     {
       enabled: true,
       channelDeleteThreshold: 3,
@@ -39,8 +43,7 @@ client.on("channelDelete", async (channel: any) => {
   );
 });
 
-client.on("roleDelete", async (role: any) => {
-  if (!role?.guild) return;
+client.on("roleDelete", async (role) => {
   await handleDestructiveAction(
     role.guild,
     {
