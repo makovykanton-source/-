@@ -360,3 +360,52 @@ npm ls discord.js
 Должно быть: `discord.js@14.25.x` (или выше в ветке 14).
 
 В проекте добавлены `overrides` и проверка `npm run verify:deps`, поэтому postinstall теперь явно валидирует major-версию.
+
+
+## 13) Нужен ли прокси и как его подключить
+
+Коротко:
+
+- Если сервер имеет прямой доступ в интернет (npm registry, Discord API, OAuth endpoints) — **прокси не нужен**.
+- Если в вашей сети исходящий трафик ограничен — используйте HTTP/HTTPS proxy.
+
+### Когда прокси точно нужен
+
+- `npm install` падает из-за сетевых ограничений.
+- API/Bot не могут достучаться до `discord.com`.
+- Ваша компания требует egress только через proxy gateway.
+
+### Где настраивать
+
+В `.env` (и уже добавлено в `.env.example`):
+
+```env
+HTTP_PROXY=http://proxy.company.local:8080
+HTTPS_PROXY=http://proxy.company.local:8080
+NO_PROXY=localhost,127.0.0.1,::1,postgres,redis
+```
+
+### Что ставить в параметры
+
+1. **HTTP_PROXY** — адрес прокси для HTTP.
+2. **HTTPS_PROXY** — адрес прокси для HTTPS (обычно тот же).
+3. **NO_PROXY** — список хостов/сервисов, которые не должны идти через прокси:
+   - локальные адреса (`localhost`, `127.0.0.1`)
+   - внутренние контейнеры (`postgres`, `redis`)
+
+### Практическая проверка
+
+```bash
+# посмотреть активные proxy env
+env | rg -i 'proxy|no_proxy'
+
+# проверить доступ к npm registry
+curl -I https://registry.npmjs.org/
+```
+
+Если видите `403`/`CONNECT tunnel failed` — это почти всегда политика прокси/файрвола, а не ошибка кода.
+
+### Важно
+
+- Не указывайте логин/пароль прокси в git.
+- Для production храните чувствительные proxy credentials в secret manager.
