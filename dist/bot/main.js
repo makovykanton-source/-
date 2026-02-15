@@ -14,7 +14,7 @@ const client = new Client({
 });
 client.once("ready", () => logger.info({ shard: env.SHARD_ID }, "Discord bot ready"));
 client.on("channelDelete", async (channel) => {
-    if (!channel.guild)
+    if (!("guild" in channel))
         return;
     await handleDestructiveAction(channel.guild, {
         enabled: true,
