@@ -1,6 +1,6 @@
 import { Queue } from "bullmq";
-import { redis } from "../cache/redis.js";
+import { bullmqConnection } from "./connection.js";
 
-export const moderationQueue = new Queue("moderation-actions", { connection: redis });
-export const backupQueue = new Queue("backup-jobs", { connection: redis });
-export const analyticsQueue = new Queue("analytics-events", { connection: redis });
+export const moderationQueue = new Queue("moderation-actions", { connection: bullmqConnection });
+export const backupQueue = new Queue("backup-jobs", { connection: bullmqConnection });
+export const analyticsQueue = new Queue("analytics-events", { connection: bullmqConnection });
