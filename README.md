@@ -429,3 +429,15 @@ curl -I https://registry.npmjs.org/
 
 - Не указывайте логин/пароль прокси в git.
 - Для production храните чувствительные proxy credentials в secret manager.
+
+---
+
+## AI Discord Server Manager planning docs
+
+For the SaaS evolution (bot + web dashboard + AI analytics), see:
+
+- `docs/AI_SERVER_MANAGER_ARCHITECTURE.md`
+- `docs/MVP_ROADMAP.md`
+- `docs/MONOREPO_BLUEPRINT.md`
+
+A monorepo scaffold was also added under `apps/` and `packages/` as a starting point for gradual migration.
